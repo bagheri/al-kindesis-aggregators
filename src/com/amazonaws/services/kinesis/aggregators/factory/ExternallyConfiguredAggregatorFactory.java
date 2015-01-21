@@ -45,9 +45,10 @@ public class ExternallyConfiguredAggregatorFactory {
         return list;
     }
 
-    public static AggregatorGroup buildFromConfig(String streamName, String applicationName,
+    public static AggregatorGroup buildFromConfig(ClassLoader classloader,
+                                                  String streamName, String applicationName,
             KinesisClientLibConfiguration config, String configFile) throws Exception {
-        List<ExternalConfigurationModel> models = ExternalConfigurationModel.buildFromConfig(configFile);
+        List<ExternalConfigurationModel> models = ExternalConfigurationModel.buildFromConfig(classloader, configFile);
 
         if (models.size() == 0) {
             throw new InvalidConfigurationException(String.format(

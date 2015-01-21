@@ -27,6 +27,8 @@ import com.amazonaws.services.kinesis.aggregators.AggregatorsConstants;
 import com.amazonaws.services.kinesis.aggregators.consumer.AggregatorConsumer;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.InitialPositionInStream;
 
+import java.io.File;
+
 public class AggregatorsBeanstalkApp implements ServletContextListener {
     private static final Log LOG = LogFactory.getLog(AggregatorsBeanstalkApp.class);
 
@@ -50,6 +52,7 @@ public class AggregatorsBeanstalkApp implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent contextEvent) {
         String configPath = System.getProperty(AggregatorsConstants.CONFIG_URL_PARAM);
+        LOG.info(String.format("Aggregators Config Path: %s", configPath));
 
         if (configPath != null && !configPath.equals("")) {
             LOG.info("Starting Managed Beanstalk Aggregators Worker");
@@ -81,7 +84,7 @@ public class AggregatorsBeanstalkApp implements ServletContextListener {
                 }
             }
 
-            try {
+            //try {
                 AggregatorConsumer consumer = new AggregatorConsumer(streamNameParam, appNameParam,
                         configPath);
 
@@ -108,9 +111,20 @@ public class AggregatorsBeanstalkApp implements ServletContextListener {
 
                 // configure the consumer so that the aggregators get
                 // instantiated
+            try {
+                ClassLoader cl = contextEvent.getServletContext().getClassLoader();
+                cl.loadClass("com.amazonaws.services.kinesis.aggregators.datastore.DevNullDataStore");
+                LOG.info("loaded com.amazonaws.services.kinesis.aggregators.datastore.DevNullDataStore");
                 consumer.configure();
+                LOG.info("Configured Aggregator consumer.");
+            }
+            catch (Exception e) {
+                LOG.error(e);
+            } 
 
                 AggregatorGroup aggGroup = consumer.getAggregators();
+
+                LOG.info(String.format("Registering Stream '%s' and Aggregator Group '%s' with Servlet Context", streamNameParam, aggGroup));
 
                 // put the aggregator group reference and configureation
                 // references into the application context
@@ -118,7 +132,7 @@ public class AggregatorsBeanstalkApp implements ServletContextListener {
                 contextEvent.getServletContext().setAttribute(
                         AggregatorsConstants.STREAM_NAME_PARAM, streamNameParam);
 
-                LOG.info("Registered Stream and Aggregator Group with Servlet Context");
+                LOG.info(String.format("Registered Stream '%s' and Aggregator Group '%s' with Servlet Context", streamNameParam, aggGroup));
 
                 // start the consumer
                 final class ConsumerRunner implements Runnable {
@@ -140,9 +154,9 @@ public class AggregatorsBeanstalkApp implements ServletContextListener {
                 }
                 t = new Thread(new ConsumerRunner(consumer));
                 t.start();
-            } catch (Exception e) {
-                LOG.error(e);
-            }
+            //} catch (Exception e) {
+            //    LOG.error(e);
+            //}
         } else {
             LOG.warn(String.format(
                     "No Aggregators Configuration File found in Beanstalk Configuration %s. Application is Idle",

@@ -98,7 +98,8 @@ public class DateQueryServlet extends AbstractQueryServlet {
         try {
             d = StreamAggregator.dateFormatter.parse(dateValue);
         } catch (Exception e) {
-            doError(response, String.format("Date Parameter must be in format %s",
+            doError(response, String.format("Date Parameter '%s' must be in format %s",
+                    dateValue,
                     StreamAggregator.dateFormatter.getDateFormatSymbols().toString()));
             return;
         }
@@ -127,7 +128,10 @@ public class DateQueryServlet extends AbstractQueryServlet {
                 AggregatorsBeanstalkApp.AGGREGATOR_GROUP_PARAM);
 
         if (aggGroup == null) {
-            doError(response, "Aggregator Application Not Initialised");
+            doError(response,
+                    String.format("Aggregator (%s : %s, %s : %s) Application Not Initialised",
+                                  AggregatorsConstants.STREAM_NAME_PARAM, streamName,
+                                  AggregatorsBeanstalkApp.AGGREGATOR_GROUP_PARAM, aggGroup));
             return;
         }
 

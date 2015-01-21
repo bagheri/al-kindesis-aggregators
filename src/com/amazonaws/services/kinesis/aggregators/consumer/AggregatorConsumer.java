@@ -67,7 +67,7 @@ public final class AggregatorConsumer {
     }
 
     private AggregatorGroup buildAggregatorsFromConfig() throws Exception {
-        return ExternallyConfiguredAggregatorFactory.buildFromConfig(this.streamName, this.appName,
+        return ExternallyConfiguredAggregatorFactory.buildFromConfig(getClass().getClassLoader(), this.streamName, this.appName,
                 this.config, configFilePath);
 
     }

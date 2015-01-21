@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -189,7 +192,7 @@ public class ExternalConfigurationModel {
         }
     }
 
-    public static List<ExternalConfigurationModel> buildFromConfig(String configFilePath)
+    public static List<ExternalConfigurationModel> buildFromConfig(ClassLoader classloader, String configFilePath)
             throws Exception {
         List<ExternalConfigurationModel> response = new ArrayList<>();
 
@@ -311,7 +314,7 @@ public class ExternalConfigurationModel {
                     "metricsEmitterClass");
             if (emitMetrics != null || metricsEmitterClassname != null) {
                 if (metricsEmitterClassname != null) {
-                    config.setMetricsEmitter((Class<IMetricsEmitter>) ClassLoader.getSystemClassLoader().loadClass(
+                    config.setMetricsEmitter((Class<IMetricsEmitter>) classloader.loadClass(
                             metricsEmitterClassname));
                 } else {
                     config.setEmitMetrics(Boolean.parseBoolean(emitMetrics));
@@ -321,7 +324,7 @@ public class ExternalConfigurationModel {
             // configure the data store class
             String dataStoreClass = StreamAggregatorUtils.readValueAsString(section, "IDataStore");
             if (dataStoreClass != null) {
-                Class<IDataStore> dataStore = (Class<IDataStore>) ClassLoader.getSystemClassLoader().loadClass(
+                Class<IDataStore> dataStore = (Class<IDataStore>) classloader.loadClass(
                         dataStoreClass);
                 config.setDataStore(dataStore);
             }
