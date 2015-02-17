@@ -248,10 +248,26 @@ public class StreamAggregatorUtils {
     }
 
     public static JsonNode asJsonNode(String s) throws Exception {
+/*
+        LOG.info(String.format("Trying to parse Json: %s", s));
+*/
         return mapper.readTree(s);
     }
 
     public static JsonNode asJsonNode(File f) throws Exception {
+        java.io.BufferedReader reader =
+            new java.io.BufferedReader(new java.io.FileReader(f));
+/*
+        java.io.StringWriter writer = new java.io.StringWriter();
+        String line = null;
+        do
+        {
+            line = reader.readLine();
+            writer.write(line);
+        } while (line != null);
+        LOG.info(String.format("Trying to parse Json in %s: %s",
+                               f.getAbsolutePath(), writer.toString()));
+*/
         return mapper.readTree(f);
     }
 

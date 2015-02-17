@@ -77,6 +77,7 @@ public final class AggregatorConsumer {
     }
 
     public int run() throws Exception {
+        LOG.info(String.format("Configuring %s to process stream %s", appName, streamName));
         configure();
 
         System.out.println(String.format("Starting %s", appName));

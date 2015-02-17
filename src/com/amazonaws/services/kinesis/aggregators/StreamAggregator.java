@@ -693,8 +693,8 @@ public class StreamAggregator implements IStreamAggregator {
                         throw se;
                     } else {
                         logWarn(String.format(
-                                "Serialisation Exception Sequence %s Partition Key %s",
-                                event.getSequenceNumber(), event.getPartitionKey()), se);
+                                "Serialisation Exception Sequence %s Partition Key %s: %s",
+                                event.getSequenceNumber(), event.getPartitionKey(), se.getMessage()), se);
                     }
                 }
 
