@@ -122,9 +122,13 @@ public class JsonDataExtractor extends AbstractDataExtractor implements IDataExt
 
                     // bail on no date returned
                     if (dateString == null || dateString.equals(""))
-                        throw new SerializationException(String.format(
-                                "Unable to read date value attribute %s from JSON Content %s",
-                                dateValueAttribute, item));
+                    {
+                        String msg = String.format(
+                                        "Unable to read date value attribute %s from JSON Content %s",
+                                        dateValueAttribute, item);
+                        LOG.error(msg);
+                        throw new SerializationException(msg);
+                    }
 
                     // turn date as long or string into Date
                     if (this.dateFormat != null) {
@@ -170,6 +174,11 @@ public class JsonDataExtractor extends AbstractDataExtractor implements IDataExt
 
             return aggregateData;
         } catch (Exception e) {
+            Throwable cause = e.getCause();
+            String causeMessage = (cause == null ? null : cause.getMessage());
+            LOG.error(String.format("Exception during Json deserialization: message: %s, cause: %s",
+                                    e.getMessage(), causeMessage),
+                      e);
             throw new SerializationException(e);
         }
     }
